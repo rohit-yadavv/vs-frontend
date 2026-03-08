@@ -16,11 +16,12 @@ import { InputNode } from './nodes/inputNode';
 import { LLMNode } from './nodes/llmNode';
 import { OutputNode } from './nodes/outputNode';
 import { TextNode } from './nodes/textNode';
-import { NoteNode } from './nodes/noteNode';
 import { APINode } from './nodes/apiNode';
 import { ConditionNode } from './nodes/conditionNode';
 import { MergeNode } from './nodes/mergeNode';
 import { TransformNode } from './nodes/transformNode';
+
+import { DeletableEdge } from './edges/deletableEdge';
 
 import 'reactflow/dist/style.css';
 import { SubmitButton } from './submit';
@@ -33,12 +34,17 @@ const nodeTypes = {
   llm: LLMNode,
   customOutput: OutputNode,
   text: TextNode,
-  note: NoteNode,
   api: APINode,
   condition: ConditionNode,
   merge: MergeNode,
   transform: TransformNode,
 };
+
+const edgeTypes = {
+  deletable: DeletableEdge,
+};
+
+
 
 const selector = (state) => ({
   nodes: state.nodes,
@@ -59,6 +65,8 @@ const ZoomDisplayContent = () => {
 export const PipelineUI = () => {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const {
     nodes,
     edges,
@@ -69,10 +77,37 @@ export const PipelineUI = () => {
     onConnect
   } = useStore(selector, shallow);
 
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const nodeData = nodes.map(n => ({ id: n.id }));
+      const edgeData = edges.map(e => ({ source: e.source, target: e.target }));
+
+      const response = await fetch('http://localhost:8000/pipelines/parse', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nodes: nodeData, edges: edgeData }),
+      });
+
+      if (!response.ok) throw new Error('Failed to parse pipeline');
+
+      const result = await response.json();
+      alert(`Pipeline Results:\n- Nodes: ${result.num_nodes}\n- Edges: ${result.num_edges}\n- Is DAG: ${result.is_dag}`);
+    } catch (error) {
+      console.error('Submission failed:', error);
+      alert('Error: Could not connect to the backend. Make sure the FastAPI server is running.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getInitNodeData = (nodeID, type) => {
     let nodeData = { id: nodeID, nodeType: `${type}` };
     return nodeData;
   }
+
 
   const onDrop = useCallback(
     (event) => {
@@ -124,11 +159,13 @@ export const PipelineUI = () => {
         onDragOver={onDragOver}
         onInit={setReactFlowInstance}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         proOptions={proOptions}
         snapGrid={[gridSize, gridSize]}
         connectionLineType='smoothstep'
         fitView
       >
+
         <Background color="hsl(var(--muted-foreground) / 0.1)" gap={gridSize} variant="dots" />
 
         {/* Custom Floating Bottom Bar */}
@@ -146,10 +183,10 @@ export const PipelineUI = () => {
               </div>
             </div>
 
-            <div className="overflow-hidden h-[170px] w-[220px] relative -bottom-2">
+            <div className="overflow-hidden h-[140px] w-[220px] relative">
               <MiniMap
-              className='m-0!'
                 pannable
+                className="!m-0 rounded-md"
                 nodeColor={(n) => {
                   if (n.type === 'llm') return '#a855f7';
                   if (n.type === 'customInput') return '#22c55e';
@@ -164,9 +201,10 @@ export const PipelineUI = () => {
           </div>
 
           <div className="pointer-events-auto pb-1">
-            <SubmitButton />
+            <SubmitButton onClick={handleSubmit} loading={loading} />
           </div>
         </div>
+
 
       </ReactFlow>
     </div>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardAction } from '../components/ui/card';
 import { Handle, Position } from 'reactflow';
 import { cn } from "../lib/utils";
@@ -51,28 +52,39 @@ export const NodeContainer = ({ id, type, title, inputs = [], outputs = [], chil
   return (
     <Card
       className={cn(
-        "relative min-w-[200px] transition-all bg-card shadow-sm hover:shadow-md overflow-visible",
+        "relative min-w-[200px] transition-all bg-card shadow-sm hover:shadow-md overflow-visible flex flex-col",
         selected ? "border-primary ring-1 ring-primary" : "border-border"
       )}
       style={style}
     >
+
       {/* Input handles */}
       {inputs.map((handle, i) => {
           const connected = isConnected(handle.id);
           return (
-            <Handle
-              key={handle.id}
-              type="target"
-              position={Position.Left}
-              id={handle.id}
-              className={cn(
-                "!w-3 !h-3 !border-2 !border-background !z-50 transition-colors duration-200",
-                connected ? "!bg-primary" : "!bg-muted-foreground/30"
-              )}
-              style={{ top: getHandleTop(i, inputs.length), ...handle.style }}
-            />
+            <React.Fragment key={handle.id}>
+                <Handle
+                  type="target"
+                  position={Position.Left}
+                  id={handle.id}
+                  className={cn(
+                    "!w-3 !h-3 !border-2 !border-background !z-[101] !-left-1.5 transition-colors duration-200",
+                    connected ? "!bg-primary" : "!bg-muted-foreground/30"
+                  )}
+                  style={{ top: getHandleTop(i, inputs.length), ...handle.style }}
+                />
+                {handle.label && (
+                    <span
+                        className="absolute right-[calc(100%+8px)] -translate-y-1/2 text-[9px] font-black uppercase text-primary/80 tracking-tighter whitespace-nowrap pointer-events-none drop-shadow-sm z-[101]"
+                        style={{ top: getHandleTop(i, inputs.length) }}
+                    >
+                        {handle.label}
+                    </span>
+                )}
+            </React.Fragment>
           );
       })}
+
 
       {/* Enhanced Header */}
       <CardHeader className="flex flex-row items-center justify-between">
@@ -114,6 +126,7 @@ export const NodeContainer = ({ id, type, title, inputs = [], outputs = [], chil
         {children}
       </CardContent>
 
+
       {/* Output handles */}
       {outputs.map((handle, i) => {
           const connected = isConnected(handle.id);
@@ -124,11 +137,12 @@ export const NodeContainer = ({ id, type, title, inputs = [], outputs = [], chil
               position={Position.Right}
               id={handle.id}
               className={cn(
-                "!w-3 !h-3 !border-2 !border-background !z-50 transition-colors duration-200",
+                "!w-3 !h-3 !border-2 !border-background !z-[100] !-right-1.5 transition-colors duration-200",
                 connected ? "!bg-primary" : "!bg-muted-foreground/30"
               )}
               style={{ top: getHandleTop(i, outputs.length), ...handle.style }}
             />
+
           );
       })}
     </Card>

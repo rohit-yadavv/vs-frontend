@@ -10,8 +10,9 @@ const categories = [
         nodes: [
             { type: 'customInput', label: 'Input' },
             { type: 'customOutput', label: 'Output' },
-            { type: 'note', label: 'Note' },
+            { type: 'text', label: 'Text Node' },
         ]
+
     },
     {
         id: 'logic',
@@ -25,7 +26,6 @@ const categories = [
         id: 'data-transformation',
         label: 'Data Transformation',
         nodes: [
-            { type: 'text', label: 'Text Node' },
             { type: 'transform', label: 'Transform' },
             { type: 'merge', label: 'Merge' },
         ]
@@ -60,7 +60,7 @@ export const PipelineToolbar = () => {
                     isSearchOpen ? "w-64" : "w-10"
                 )}>
                     {!isSearchOpen ? (
-                        <button 
+                        <button
                             onClick={() => setIsSearchOpen(true)}
                             className="flex items-center justify-center h-9 w-9 hover:text-primary transition-colors text-muted-foreground rounded-full hover:bg-muted/40"
                         >
@@ -69,14 +69,14 @@ export const PipelineToolbar = () => {
                     ) : (
                         <div className="flex items-center w-full gap-2 bg-muted/30 border border-border/40 rounded-full px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary/30 transition-shadow">
                             <Search size={16} className="text-muted-foreground shrink-0" />
-                            <input 
+                            <input
                                 autoFocus
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search nodes..."
                                 className="bg-transparent border-none outline-none text-xs w-full placeholder:text-muted-foreground/40"
                             />
-                            <button 
+                            <button
                                 onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
                                 className="text-muted-foreground hover:text-foreground shrink-0 p-0.5 hover:bg-muted/40 rounded-full"
                             >
@@ -97,7 +97,7 @@ export const PipelineToolbar = () => {
                             className={cn(
                                 "relative flex h-10 items-center px-4 text-[10px] font-semibold uppercase tracking-widest transition-colors hover:text-primary whitespace-nowrap",
                                 activeTab === category.id && !searchQuery
-                                    ? "text-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary" 
+                                    ? "text-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary"
                                     : "text-muted-foreground"
                             )}
                         >
@@ -106,21 +106,21 @@ export const PipelineToolbar = () => {
                     ))}
                 </div>
             </div>
-            
+
             <div className="flex items-center gap-6 p-2 px-6 overflow-x-auto no-scrollbar bg-background/5  min-h-[96px]">
                 {searchQuery ? (
                     filteredNodes?.length > 0 ? (
                         filteredNodes.map((node) => (
-                            <DraggableNode 
-                                key={node.type} 
-                                type={node.type} 
-                                label={node.label} 
+                            <DraggableNode
+                                key={node.type}
+                                type={node.type}
+                                label={node.label}
                             />
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center w-full h-[80px]">
                             <p className="text-xs text-muted-foreground font-medium">No results for "{searchQuery}"</p>
-                            <button 
+                            <button
                                 onClick={() => setSearchQuery('')}
                                 className="text-[10px] uppercase font-bold text-primary hover:opacity-80 mt-1"
                             >
@@ -130,10 +130,10 @@ export const PipelineToolbar = () => {
                     )
                 ) : (
                     activeCategory?.nodes.map((node) => (
-                        <DraggableNode 
-                            key={node.type} 
-                            type={node.type} 
-                            label={node.label} 
+                        <DraggableNode
+                            key={node.type}
+                            type={node.type}
+                            label={node.label}
                         />
                     ))
                 )}

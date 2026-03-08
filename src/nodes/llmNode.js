@@ -25,7 +25,7 @@ export const LLMNode = ({ id, data, selected }) => {
       ]}
       outputs={[{ id: `${id}-response`, label: 'Response' }]}
       selected={selected}
-      tooltip="Large Language Model node for processing prompts using state-of-the-art AI models."
+      tooltip="LLM node for processing prompts using state-of-the-art AI models."
     >
       <div className="flex flex-col gap-4">
         {/* Model Selection */}

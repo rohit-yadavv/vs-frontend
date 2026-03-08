@@ -9,10 +9,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import { useStore } from '../store';
 
 export const InputNode = ({ id, data, selected }) => {
-  const [name, setName] = useState(data?.inputName || id.replace('customInput-', 'input_'));
+  const updateNodeField = useStore((state) => state.updateNodeField);
+  const defaultName = id.replace('customInput-', 'input_');
+  const [name, setName] = useState(data?.inputName || defaultName);
   const [inputType, setInputType] = useState(data?.inputType || 'Text');
+
+  useState(() => {
+    if (!data?.inputName) {
+      updateNodeField(id, 'inputName', defaultName);
+    }
+  });
+
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setName(newName);
+    updateNodeField(id, 'inputName', newName);
+  };
 
   return (
     <NodeContainer
@@ -21,7 +36,7 @@ export const InputNode = ({ id, data, selected }) => {
       title="Input"
       outputs={[{ id: `${id}-value` }]}
       selected={selected}
-      tooltip="An input node serves as an entry point for your pipeline data. Supports text and file streams."
+      tooltip="An input node serves as an entry point for your pipeline data."
     >
       <div className="flex flex-col gap-3">
         <div className="space-y-1.5">
@@ -30,9 +45,10 @@ export const InputNode = ({ id, data, selected }) => {
             id={`${id}-name`}
             type="text" 
             value={name} 
-            onChange={(e) => setName(e.target.value)} 
+            onChange={handleNameChange} 
           />
         </div>
+
         <div className="space-y-1.5">
           <Label htmlFor={`${id}-type`} className="text-[10px] font-bold uppercase text-muted-foreground/70">Type</Label>
           <Select value={inputType} onValueChange={setInputType}>
