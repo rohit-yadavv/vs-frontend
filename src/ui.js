@@ -65,8 +65,7 @@ const ZoomDisplayContent = () => {
 export const PipelineUI = () => {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+  
   const {
     nodes,
     edges,
@@ -76,32 +75,6 @@ export const PipelineUI = () => {
     onEdgesChange,
     onConnect
   } = useStore(selector, shallow);
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const nodeData = nodes.map(n => ({ id: n.id }));
-      const edgeData = edges.map(e => ({ source: e.source, target: e.target }));
-
-      const response = await fetch('http://localhost:8000/pipelines/parse', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nodes: nodeData, edges: edgeData }),
-      });
-
-      if (!response.ok) throw new Error('Failed to parse pipeline');
-
-      const result = await response.json();
-      alert(`Pipeline Results:\n- Nodes: ${result.num_nodes}\n- Edges: ${result.num_edges}\n- Is DAG: ${result.is_dag}`);
-    } catch (error) {
-      console.error('Submission failed:', error);
-      alert('Error: Could not connect to the backend. Make sure the FastAPI server is running.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getInitNodeData = (nodeID, type) => {
     let nodeData = { id: nodeID, nodeType: `${type}` };
@@ -201,8 +174,9 @@ export const PipelineUI = () => {
           </div>
 
           <div className="pointer-events-auto pb-1">
-            <SubmitButton onClick={handleSubmit} loading={loading} />
+            <SubmitButton />
           </div>
+
         </div>
 
 

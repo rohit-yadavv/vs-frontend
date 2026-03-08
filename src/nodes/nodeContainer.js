@@ -75,7 +75,7 @@ export const NodeContainer = ({ id, type, title, inputs = [], outputs = [], chil
                 />
                 {handle.label && (
                     <span
-                        className="absolute right-[calc(100%+8px)] -translate-y-1/2 text-[9px] font-black uppercase text-primary/80 tracking-tighter whitespace-nowrap pointer-events-none drop-shadow-sm z-[101]"
+                        className="absolute right-[calc(100%+8px)] -translate-y-1/2 text-[9px] text-foreground uppercase text-primary/80 tracking-tighter whitespace-nowrap  z-[101]"
                         style={{ top: getHandleTop(i, inputs.length) }}
                     >
                         {handle.label}
